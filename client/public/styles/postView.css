@@ -1,0 +1,47 @@
+/* Modern post container */
+.post-container {
+  background-color: #ffffff;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.dark-mode .post-container {
+  background-color: #1e1e1e;
+}
+
+/* Post image styles */
+.post-image {
+  max-height: 350px;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+/* Text styling for light and dark */
+.text-title {
+  color: #2c3e50;
+}
+body.dark-mode .text-title {
+  color: #f1f1f1;
+}
+
+.justify-text {
+  text-align: justify;
+  font-size: 1.1rem;
+  line-height: 1.8;
+}
+
+/* Muted text adjust for dark mode */
+.text-muted {
+  color: #6c757d !important;
+}
+body.dark-mode .text-muted {
+  color: #aaa !important;
+}
+
+
+
+
+
