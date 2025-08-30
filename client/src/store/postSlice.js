@@ -1,8 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+const isProd = import.meta.env.VITE_ENV === "production";
+const backend_URL = isProd ? import.meta.env.VITE_RENDER_BACKEND_URL : import.meta.env.VITE_LOCAL_BACKEND_URL;
+console.log(backend_URL);
+
 export const get_post = createAsyncThunk("posts/fetchPosts", async () => {
-    const res = await axios.get("http://localhost:5000/api/posts");
+    const res = await axios.get(`${backend_URL}/api/posts`);
     return res.data;
 })
 
@@ -13,7 +17,7 @@ export const add_post = createAsyncThunk("posts/addPosts", async (post, { reject
             formData.append(key, post[key]);
         }
 
-        const res = await axios.post("http://localhost:5000/api/posts/submit", formData);
+        const res = await axios.post(`${backend_URL}/api/posts/submit`, formData);
         return res.data;
     } catch (err) {
         return rejectWithValue(err.response?.data || err.message);
@@ -26,7 +30,7 @@ export const update_post = createAsyncThunk("posts/updatePosts", async (updatedD
         for (const key in updatedData) {
             formData.append(key, updatedData[key]);
         }
-        const res = await axios.patch(`http://localhost:5000/api/posts/update/${updatedData.id}`, formData);
+        const res = await axios.patch(`${backend_URL}/api/posts/update/${updatedData.id}`, formData);
         return res.data;
     } catch (err) {
         return rejectWithValue(err.response?.data || err.message);
@@ -34,7 +38,7 @@ export const update_post = createAsyncThunk("posts/updatePosts", async (updatedD
 })
 
 export const delete_post = createAsyncThunk("posts/deletePosts", async (id) => {
-    await axios.delete(`http://localhost:5000/api/posts/delete/${id}`);
+    await axios.delete(`${backend_URL}/api/posts/delete/${id}`);
     return id;
 })
 
