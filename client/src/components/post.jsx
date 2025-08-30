@@ -1,17 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { delete_post } from "../store/postSlice";
+import { delete_post, get_post } from "../store/postSlice";
 
 
 function Post() {
     const { id } = useParams();
-    const posts = useSelector(state => state.posts.blogList);
-    const post = posts.find(post => post.id == id);
-
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const posts = useSelector(state => state.posts.blogList);
+
+    useEffect(() => {
+        if (posts.length === 0) {
+            dispatch(get_post());
+        }
+    }, [dispatch, posts.length]);
+    const post = posts.find(post => post.id == id);
 
     if (!post) {
         return <h2 className="text-center mt-5">Post not found</h2>;
@@ -22,8 +27,6 @@ function Post() {
         await dispatch(delete_post(id));
         navigate("/");
     }
-
-
 
     return (
 
@@ -39,7 +42,7 @@ function Post() {
                             {post.title}
                         </h1>
 
-                        <p className="text-muted text-center mb-4 fs-6">📅 Posted on {post.monDate}
+                        <p className="text-muted text-center mb-4 fs-6">📅 Posted on {post.mondate}
                         </p>
 
                         <div className="post-content mb-5">

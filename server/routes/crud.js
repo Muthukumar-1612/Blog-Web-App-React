@@ -118,7 +118,7 @@ router.patch("/update/:id", handleUpload, async (req, res) => {
 // Delete post
 router.delete("/delete/:id", async (req, res) => {
     try {
-        await db.query(`
+        const result = await db.query(`
             DELETE FROM blogs_v2 
             WHERE id = $1 
             RETURNING *;
