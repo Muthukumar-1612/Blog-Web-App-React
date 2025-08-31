@@ -42,7 +42,8 @@ function Post() {
                             {post.title}
                         </h1>
 
-                        <p className="text-muted text-center mb-4 fs-6">📅 Posted on {post.mondate}
+                        <p className="text-muted text-center mb-4 fs-6">
+                            📅 {post.mondate?.startsWith("Edited") ? post.mondate : `Posted on ${post.mondate}`}
                         </p>
 
                         <div className="post-content mb-5">
