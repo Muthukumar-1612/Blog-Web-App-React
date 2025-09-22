@@ -7,6 +7,7 @@ import session from "express-session";
 import env from "dotenv";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
+import { db } from "./db.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -26,6 +27,10 @@ app.use(cors({
 app.use(express.json());
 
 app.use(session({
+    store: new pgSession({
+        pool: db,
+        tableName: "session"
+    }),
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
