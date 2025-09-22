@@ -10,6 +10,8 @@ import { fileURLToPath } from "url";
 import { db } from "./db.js";
 import pgSession from "connect-pg-simple";
 
+const PgSession = pgSession(session);
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 env.config({ path: path.join(__dirname, ".env") });
@@ -28,7 +30,7 @@ app.use(cors({
 app.use(express.json());
 
 app.use(session({
-    store: new pgSession({
+    store: new PgSession({
         pool: db,
         tableName: "session"
     }),
