@@ -17,7 +17,7 @@ router.get("/user", (req, res) => {
 });
 
 router.post("/register", async (req, res) => {
-    const { name, email, password } = req.body;
+    let { name, email, password } = req.body;
     try {
         email = email.trim().toLowerCase();
         const existingUser = await db.query("SELECT * FROM users WHERE email = $1", [email]);
