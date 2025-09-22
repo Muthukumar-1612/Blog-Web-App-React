@@ -1,0 +1,76 @@
+import express from "express";
+import { db } from "../db.js";
+import bcrypt from "bcrypt";
+import passport from "passport";
+
+const saltRounds = 10;
+
+const router = express.Router();
+
+router.get("/user", (req, res) => {
+    res.set("Cache-Control", "no-store");
+    if (req.isAuthenticated()) {
+        const { id, name, email } = req.user;
+        return res.status(200).json({ user: { id, name, email } });
+    }
+    return res.status(401).json({ message: "Unauthorized" });
+});
+
+router.post("/register", async (req, res) => {
+    const { name, email, password } = req.body;
+    try {
+        const existingUser = await db.query("SELECT * FROM users WHERE email = $1", [email]);
+
+        if (existingUser.rows.length > 0) {
+            return res.status(409).json({ message: "This email is already registered. Please try logging in." });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        const newUser = await db.query(
+            `INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id, name, email`,
+            [name, email, hashedPassword]
+        );
+        return res.status(201).json({
+            message: "User registered successfully",
+            user: newUser.rows[0]
+        });
+
+    } catch (error) {
+        console.error("Registration error:", error.stack);
+        res.status(500).json({ message: "Something went wrong. Please try again later." });
+    }
+});
+
+router.post("/login", (req, res, next) => {
+    passport.authenticate("local", (err, user, info) => {
+        if (err) {
+            return res.status(500).json({ message: "Something went wrong. Please try again later." });
+        }
+        if (!user) {
+            return res.status(401).json({ message: info.message });
+        }
+        req.logIn(user, (err) => {
+            if (err) {
+                return res.status(500).json({ message: "Login failed. Please try again." });
+            }
+            return res.status(200).json({ message: "Login successful", user: { id: user.id, name: user.name, email: user.email } });
+        });
+    })(req, res, next);
+});
+
+router.post("/logout", (req, res) => {
+    req.logout((err) => {
+        if (err) {
+            return res.status(500).json({ message: "Logout failed. Please try again." });
+        }
+        req.session.destroy((err) => {
+            if (err) {
+                return res.status(500).json({ message: "Could not destroy session. Please try again." });
+            }
+            res.clearCookie("connect.sid");
+            return res.status(200).json({ message: "Logout successful" });
+        });
+    });
+});
+
+export default router;

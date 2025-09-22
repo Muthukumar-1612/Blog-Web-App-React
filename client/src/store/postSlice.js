@@ -3,7 +3,7 @@ import axios from "axios";
 
 const isProd = import.meta.env.VITE_ENV === "production";
 const backend_URL = isProd ? import.meta.env.VITE_RENDER_BACKEND_URL : import.meta.env.VITE_LOCAL_BACKEND_URL;
-console.log(backend_URL);
+// console.log(backend_URL);
 
 export const get_post = createAsyncThunk("posts/fetchPosts", async () => {
     const res = await axios.get(`${backend_URL}/api/posts`);
