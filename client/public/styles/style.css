@@ -306,3 +306,16 @@ body.dark-mode .custom-file-label:hover {
   padding: 0;
   overflow: hidden;
 }
+
+/* App layout for sticky footer */
+.app-layout {
+  min-height: 100vh;       /* full height of viewport */
+  display: flex;
+  flex-direction: column;
+}
+
+main.content {
+  flex: 1;                 /* take up remaining space */
+  display: flex;
+  flex-direction: column;
+}

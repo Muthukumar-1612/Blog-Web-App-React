@@ -1,15 +1,16 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { Link } from "react-router-dom";
 import { delete_post, get_post } from "../store/postSlice";
-
+import { toast } from "react-toastify";
 
 function Post() {
     const { id } = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const posts = useSelector(state => state.posts.blogList);
+
+    const { user } = useSelector((state) => state.auth);
 
     useEffect(() => {
         if (posts.length === 0) {
@@ -24,9 +25,24 @@ function Post() {
 
     const deletePost = async (e) => {
         e.preventDefault()
-        await dispatch(delete_post(id));
-        navigate("/");
+        if (!user) {
+            toast.error("Please login to delete a post");
+            navigate("/login", { state: { from: "/" } });
+        } else {
+            await dispatch(delete_post(id));
+            navigate("/");
+        }
     }
+
+    const handleEditPost = (e) => {
+        if (!user) {
+            e.preventDefault();
+            toast.error("Please login to edit a post");
+            navigate("/login", { state: { from: `/post/update/${post.id}` } });
+        } else {
+            navigate(`/post/update/${post.id}`);
+        }
+    };
 
     return (
 
@@ -53,7 +69,7 @@ function Post() {
                         </div>
 
                         <div className="d-flex justify-content-center gap-3">
-                            <Link to={`/post/update/${post.id}`} className="btn btn-warning px-4 min-width-btn">Edit</Link>
+                            <button className="btn btn-warning px-4 min-width-btn" onClick={handleEditPost}>Edit</button>
                             <form >
                                 <button onClick={deletePost} className="btn btn-danger px-4 min-width-btn">Delete</button>
                             </form>

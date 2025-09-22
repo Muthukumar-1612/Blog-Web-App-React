@@ -11,7 +11,7 @@ function Home() {
   }, [dispatch]);
 
   const posts = useSelector((state) => state.posts.blogList);
-  console.log(posts);
+  // console.log(posts);
 
   return (
     <div className="container my-5">

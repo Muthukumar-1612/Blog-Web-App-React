@@ -2,22 +2,33 @@ import React from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import AppRoutes from './routes/postRoutes.jsx';
-import { Provider } from 'react-redux';
-import { store } from './store/store.js';
+import { useDispatch } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
+import { useEffect } from 'react';
+import { checkAuth } from './store/auth.js';
 
 function App() {
 
-  return (
-    <Provider store={store}>
-      <BrowserRouter>
-      <Navbar />
-      <AppRoutes />
-      <Footer />
-      </BrowserRouter>
-    </ Provider>
+  const dispatch = useDispatch();
 
-  )
+  useEffect(() => {
+    dispatch(checkAuth()); // restore session on page load
+  }, [dispatch])
+
+  return (
+    <BrowserRouter>
+      <div className="app-layout">
+        <Navbar />
+        <ToastContainer position="top-right" autoClose={3000} />
+        <main className="content">
+          <AppRoutes />
+        </main>
+        <Footer />
+      </div>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;

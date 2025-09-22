@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { add_post } from "../store/postSlice";
 import { useNavigate } from "react-router-dom";
 import formatDate from "../store/date";
+import { toast } from "react-toastify";
 
 function CreatePost() {
     const dispatch = useDispatch();
@@ -31,6 +32,13 @@ function CreatePost() {
 
         if (name === "image" && files?.length > 0) {
             const file = files[0];
+
+            if (file.size > 10 * 1024 * 1024) {
+                const sizeInMB = (file.size / (1024 * 1024)).toFixed(2); // show size in MB
+                toast.error(`File is ${sizeInMB} MB. Please upload a file ≤ 10 MB.`);
+                e.target.value = ""; // reset file input
+                return;
+            }
 
             if (post.imagePreview) {
                 URL.revokeObjectURL(post.imagePreview);

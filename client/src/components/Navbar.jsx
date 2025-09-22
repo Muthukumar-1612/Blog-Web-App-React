@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { resetAuthState, user_logout } from "../store/auth";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Navbar() {
   const [darkMode, setDarkMode] = useState(() => {
     const savedMode = localStorage.getItem("darkMode");
     return savedMode === null || savedMode === "true"; // Default to dark mode
   });
+
+  const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (darkMode) {
@@ -15,6 +23,27 @@ function Navbar() {
     }
     localStorage.setItem("darkMode", darkMode);
   }, [darkMode]);
+
+  const handleCreatePost = (e) => {
+    if (!user) {
+      e.preventDefault();
+      toast.error("Please login to create a post");
+      navigate("/login");
+    } else {
+      navigate("/create-post");
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await dispatch(user_logout()).unwrap();  // wait until backend confirms logout
+      dispatch(resetAuthState());              // clear Redux state
+      navigate("/");                           // now go home
+      toast.success("Logged out successfully");
+    } catch (error) {
+      toast.error(error.message || "Logout failed");
+    }
+  };
 
   return (
     <nav className="navbar navbar-expand-sm navbar-dark bg-dark" id="nav1">
@@ -46,8 +75,50 @@ function Navbar() {
               <Link className="nav-link" to="/">Home</Link>
             </li>
             <li className="nav-item me-2">
-              <Link className="nav-link" to="/create-post">Create Post</Link>
+              <button
+                className="nav-link btn btn-link"
+                onClick={handleCreatePost}
+                style={{
+                  textDecoration: "none",
+                  border: "none",
+                  background: "transparent",
+                  color: "white"
+                }}
+              >
+                Create Post
+              </button>
             </li>
+            {/* User display and logout */}
+            {user ? (
+              <>
+                <li className="nav-item">
+                  <span className="nav-link text-light">
+                    <i className="bi bi-person-circle me-1"></i>
+                    {user.name}
+                  </span>
+                </li>
+                <li className="nav-item">
+                  <button
+                    className="nav-link btn btn-link text-light"
+                    onClick={handleLogout}
+                    style={{
+                      textDecoration: 'none',
+                      border: 'none',
+                      background: 'transparent'
+                    }}
+                  >
+                    <i className="bi bi-box-arrow-right me-1"></i>
+                    Logout
+                  </button>
+                </li>
+              </>
+            ) : (
+              <li className="nav-item me-2">
+                <Link className="nav-link" to="/login">
+                  Login/Register
+                </Link>
+              </li>
+            )}
           </ul>
         </div>
 

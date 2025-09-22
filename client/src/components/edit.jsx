@@ -12,7 +12,8 @@ function Edit() {
   const posts = useSelector((state) => state.posts.blogList);
   const post = posts.find((p) => p.id == id);
 
-  const [updatePost, setPost] = useState(post);
+  const [updatePost, setPost] = useState(post || { title: "", description: "", image: "" });
+
   const { status } = useSelector((state) => state.posts);
   const [fileName, setFileName] = useState("No file selected");
 
