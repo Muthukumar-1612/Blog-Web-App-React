@@ -22,6 +22,8 @@ const port = 5000;
 
 const app = express();
 
+app.set("trust proxy", 1);
+
 app.use(cors({
     origin: isProd ? process.env.FRONTEND_RENDER_URL : process.env.FRONTEND_LOCAL_URL,
     credentials: true,
