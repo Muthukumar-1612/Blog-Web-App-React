@@ -8,6 +8,7 @@ import env from "dotenv";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 import { db } from "./db.js";
+import pgSession from "connect-pg-simple";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
