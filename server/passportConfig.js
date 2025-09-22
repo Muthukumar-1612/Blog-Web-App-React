@@ -7,6 +7,7 @@ passport.use(new LocalStrategy(
     { usernameField: 'email' },
     async (email, password, done) => {
         try {
+            email = email.trim().toLowerCase();
             const result = await db.query("SELECT * FROM users WHERE email = $1", [email]);
             if (result.rows.length === 0) {
                 return done(null, false, { message: 'Incorrect email.' });
