@@ -21,7 +21,7 @@ function Register() {
         confirmPassword: "",
     });
 
-    // local validation error (e.g., password mismatch)
+    // local validation error (password mismatch)
     const [localError, setLocalError] = useState(null);
     const handleChange = (e) => {
         const { name, value } = e.target;

@@ -47,10 +47,10 @@ export const checkAuth = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const res = await axios.get(`${backend_URL}/api/auth/user`, { withCredentials: true });
-            console.log("checkAuth success:", res.data);
+            // console.log("checkAuth success:", res.data);
             return res.data; // { user }
         } catch (err) {
-            console.log("checkAuth failed:", err.response?.data || err.message);
+            // console.log("checkAuth failed:", err.response?.data || err.message);
             if (err.response) {
                 return rejectWithValue({
                     status: err.response.status, // 401
@@ -86,7 +86,6 @@ const initialState = {
     error: null,      // store error message
     code: null,       // store HTTP status code
     message: null,    // store backend message - success/error
-    loading: false
 };
 
 const authReducer = createSlice({
@@ -94,7 +93,6 @@ const authReducer = createSlice({
     initialState,
     reducers: {
         resetAuthState: (state) => {
-            // state.user = null;
             state.error = null;
             state.message = null;
             state.code = null;
