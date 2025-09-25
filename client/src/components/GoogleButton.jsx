@@ -8,8 +8,6 @@ export const GoogleButton = ({ backend_URL }) => {
         setLoading(true);
 
         const oauthUrl = `${backend_URL}/api/auth/google?redirectTo=${window.location.pathname}`;
-        console.log(window.location.pathname);
-
 
         const width = 500;
         const height = 600;
