@@ -27,16 +27,10 @@ router.get("/user", (req, res) => {
 });
 
 router.get("/google", (req, res, next) => {
-    res.setHeader("Cross-Origin-Opener-Policy", "unsafe-none");
     passport.authenticate("google", { scope: ["profile", "email"] })(req, res, next);
 });
 
 router.get("/google/callback",
-    (req, res, next) => {
-        // allow popup to talk to opener
-        res.setHeader("Cross-Origin-Opener-Policy", "unsafe-none");
-        next();
-    },
     passport.authenticate("google", {
         failureRedirect: FRONTEND_URL + "/login",
         session: true
