@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { resetAuthState, user_logout } from "../store/auth";
 import { toast } from "react-toastify";
@@ -14,6 +14,7 @@ function Navbar() {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     if (darkMode) {
@@ -114,7 +115,7 @@ function Navbar() {
               </>
             ) : (
               <li className="nav-item me-2">
-                <Link className="nav-link" to="/login">
+                <Link className="nav-link" to="/login" state={{ from: location }} >
                   Login/Register
                 </Link>
               </li>
