@@ -27,43 +27,27 @@ router.get("/user", (req, res) => {
 });
 
 router.get("/google", (req, res, next) => {
-    const redirectTo = req.query.redirectTo || "/";
-    passport.authenticate("google", {
-        scope: ["profile", "email"],
-        state: redirectTo,
-    })(req, res, next);
+    res.setHeader("Cross-Origin-Opener-Policy", "unsafe-none");
+    passport.authenticate("google", { scope: ["profile", "email"] })(req, res, next);
 });
 
 router.get("/google/callback",
+    (req, res, next) => {
+        // allow popup to talk to opener
+        res.setHeader("Cross-Origin-Opener-Policy", "unsafe-none");
+        next();
+    },
     passport.authenticate("google", {
-        failureRedirect: FRONTEND_URL + "/login?error=oauth_failed",
+        failureRedirect: FRONTEND_URL + "/login",
         session: true
     }),
     (req, res) => {
-        const redirectTo = req.query.state || "/";
-
-        console.log("=== BEFORE REDIRECT ===");
-        console.log("User:", req.user);
-        console.log("Session ID:", req.sessionID);
-        console.log("Is authenticated:", req.isAuthenticated());
-
-        // Important: Don't create a new session, use the existing one
-        // Just ensure the user is attached to the current session
-        req.session.save((err) => {
-            if (err) {
-                console.error("Session save error:", err);
-                return res.redirect(FRONTEND_URL + "/login?error=session_error");
-            }
-
-            console.log("=== AFTER SESSION SAVE ===");
-            console.log("Session ID preserved:", req.sessionID);
-            console.log("User in session:", req.session.passport);
-
-            // Redirect to frontend with success indicator
-            const redirectUrl = `${FRONTEND_URL}/oauth-success?redirectTo=${encodeURIComponent(redirectTo)}&success=true`;
-            console.log("Redirecting to:", redirectUrl);
-            res.redirect(redirectUrl);
-        });
+        res.send(`
+      <script>
+        window.opener.postMessage({ status: "success" }, "${FRONTEND_URL}");
+        window.close();
+      </script>
+    `);
     }
 );
 
