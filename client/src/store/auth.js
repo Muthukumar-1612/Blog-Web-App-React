@@ -23,7 +23,6 @@ export const user_register = createAsyncThunk(
     }
 );
 
-
 export const user_login = createAsyncThunk(
     "user/login",
     async (user, { rejectWithValue }) => {
@@ -138,20 +137,17 @@ const authReducer = createSlice({
                 state.code = action.payload.status;
             })
             .addCase(checkAuth.pending, (state) => {
-                state.loading = true;
                 state.status = "loading";
                 state.error = null;
                 state.code = null;
                 state.message = null;
             })
             .addCase(checkAuth.fulfilled, (state, action) => {
-                state.loading = false;
                 state.status = "succeeded";
                 state.user = action.payload.user;
                 state.code = 200;
             })
             .addCase(checkAuth.rejected, (state, action) => {
-                state.loading = false;
                 state.status = "failed";
                 state.user = null;
                 state.error = action.payload.message;

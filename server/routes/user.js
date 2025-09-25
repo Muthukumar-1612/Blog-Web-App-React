@@ -2,6 +2,16 @@ import express from "express";
 import { db } from "../db.js";
 import bcrypt from "bcrypt";
 import passport from "passport";
+import env from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+env.config({ path: path.join(__dirname, "../.env") });
+
+const isProd = process.env.NODE_ENV === "production";
+const FRONTEND_URL = isProd ? process.env.FRONTEND_RENDER_URL : process.env.FRONTEND_LOCAL_URL
 
 const saltRounds = 10;
 
@@ -13,8 +23,27 @@ router.get("/user", (req, res) => {
         const { id, name, email } = req.user;
         return res.status(200).json({ user: { id, name, email } });
     }
-    return res.status(401).json({ message: "Unauthorized" });
+    return res.status(401).json({ message: "You are unauthorized. Please try logging in" });
 });
+
+router.get("/google", (req, res, next) => {
+    passport.authenticate("google", { scope: ["profile", "email"] })(req, res, next);
+});
+
+router.get("/google/callback",
+    passport.authenticate("google", {
+        failureRedirect: FRONTEND_URL + "/login",
+        session: true
+    }),
+    (req, res) => {
+        res.send(`
+      <script>
+        window.opener.postMessage({ status: "success" }, "${FRONTEND_URL}");
+        window.close();
+      </script>
+    `);
+    }
+);
 
 router.post("/register", async (req, res) => {
     let { name, email, password } = req.body;
