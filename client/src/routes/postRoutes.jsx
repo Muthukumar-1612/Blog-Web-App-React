@@ -6,6 +6,7 @@ import CreatePost from "../components/createPost";
 import Register from "../components/Register";
 import Login from "../components/Login";
 import RequireAuth from "../components/RequireAuth";
+import OauthSuccess from "../pages/OauthSuccess";
 
 
 function AppRoutes() {
@@ -15,6 +16,7 @@ function AppRoutes() {
             <Route path="/post/:id" element={<Post />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/oauth-success" element={<OauthSuccess />} />
             {/* Protected routes */}
             <Route element={<RequireAuth />} >
                 <Route path="/create-post" element={<CreatePost />} />

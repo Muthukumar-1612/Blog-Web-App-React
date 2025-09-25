@@ -26,9 +26,9 @@ router.get("/user", (req, res) => {
     return res.status(401).json({ message: "You are unauthorized. Please try logging in" });
 });
 
-router.get("/google", (req, res, next) => {
-    passport.authenticate("google", { scope: ["profile", "email"] })(req, res, next);
-});
+router.get("/google",
+    passport.authenticate("google", { scope: ["profile", "email"] })
+);
 
 router.get("/google/callback",
     passport.authenticate("google", {
@@ -36,12 +36,9 @@ router.get("/google/callback",
         session: true
     }),
     (req, res) => {
-        res.send(`
-      <script>
-        window.opener.postMessage({ status: "success" }, "${FRONTEND_URL}");
-        window.close();
-      </script>
-    `);
+        // redirect popup to frontend page, same-origin
+        const redirectTo = req.query.redirectTo || "/";
+        res.redirect(`${FRONTEND_URL}/oauth-success?redirectTo=${redirectTo}`);
     }
 );
 

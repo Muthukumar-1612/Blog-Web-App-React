@@ -7,7 +7,9 @@ export const GoogleButton = ({ backend_URL }) => {
 
         setLoading(true);
 
-        const oauthUrl = `${backend_URL}/api/auth/google`;
+        const oauthUrl = `${backend_URL}/api/auth/google?redirectTo=${window.location.pathname}`;
+        console.log(window.location.pathname);
+
 
         const width = 500;
         const height = 600;
@@ -15,7 +17,7 @@ export const GoogleButton = ({ backend_URL }) => {
         const left = window.screenX + (window.outerWidth - width) / 2;
         const top = window.screenY + (window.outerHeight - height) / 2;
 
-        const popup = window.open(
+        window.open(
             oauthUrl,
             "_blank",
             `width=${width},height=${height},left=${left},top=${top}`
@@ -23,7 +25,7 @@ export const GoogleButton = ({ backend_URL }) => {
 
         setTimeout(() => {
             setLoading(false);
-        }, 2000);
+        }, 3000)
 
     };
 
