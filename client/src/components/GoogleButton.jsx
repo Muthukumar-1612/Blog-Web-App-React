@@ -21,12 +21,9 @@ export const GoogleButton = ({ backend_URL }) => {
             `width=${width},height=${height},left=${left},top=${top}`
         );
 
-        const timer = setInterval(() => {
-            if (popup.closed) {
-                clearInterval(timer); // stop polling
-                setLoading(false);    // reset loading state
-            }
-        }, 500);
+        setTimeout(() => {
+            setLoading(false);
+        }, 2000);
 
     };
 

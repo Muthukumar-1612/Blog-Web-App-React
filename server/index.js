@@ -51,12 +51,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use("/api/posts", postRouter);
-// Set COOP/COEP headers for OAuth popup communication
-app.use("/api/auth", (req, res, next) => {
-    res.setHeader("Cross-Origin-Opener-Policy", "unsafe-none");
-    res.setHeader("Cross-Origin-Embedder-Policy", "unsafe-none");
-    next();
-});
 app.use("/api/auth", userRouter);
 
 app.listen(port, () => console.log(`Server running on port : ${port}`));
