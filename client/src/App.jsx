@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import { useEffect } from 'react';
 import { checkAuth } from './store/auth.js';
+import AuthListener from './components/AuthListener.jsx';
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
   return (
     <BrowserRouter>
       <div className="app-layout">
+        <AuthListener />
         <Navbar />
         <ToastContainer position="top-right" autoClose={2000} />
         <main className="content">
