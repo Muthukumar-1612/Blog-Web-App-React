@@ -18,7 +18,7 @@ env.config({ path: path.join(__dirname, ".env") });
 
 const isProd = process.env.NODE_ENV === "production";
 
-console.log(isProd ? process.env.FRONTEND_RENDER_URL : process.env.FRONTEND_LOCAL_URL);
+console.log( "URL", isProd ? process.env.FRONTEND_RENDER_URL : process.env.FRONTEND_LOCAL_URL);
 
 const port = 5000;
 
@@ -27,7 +27,7 @@ const app = express();
 app.set("trust proxy", 1);
 
 app.use(cors({
-    origin: isProd ? process.env.FRONTEND_RENDER_URL : process.env.FRONTEND_LOCAL_URL,
+    origin: "https://blog-web-app-react-frontend.onrender.com",
     credentials: true,
 }));
 
