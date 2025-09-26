@@ -68,7 +68,7 @@ function Register() {
                 < div className="p-4 border rounded shadow bg-white">
                     {/* Google OAuth */}
                     <div className="text-center mb-3">
-                        <GoogleButton backend_URL={backend_URL} />
+                        <GoogleButton backend_URL={backend_URL} redirectTo={redirectTo} />
                     </div>
 
                     <div className="d-flex align-items-center mb-3">

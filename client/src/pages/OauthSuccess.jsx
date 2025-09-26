@@ -9,68 +9,15 @@ const OauthSuccess = () => {
     const [searchParams] = useSearchParams();
 
     useEffect(() => {
-        const redirectTo = searchParams.get("redirectTo") || "/";
-        const success = searchParams.get("success") === "true";
-
-        console.log("=== BROWSER COOKIE DEBUG ===");
-        console.log("All cookies:", document.cookie);
-        console.log("Current URL:", window.location.href);
-        console.log("Domain:", window.location.hostname);
-        // Check if connect.sid cookie is present
-        const cookies = document.cookie.split(';');
-        const sessionCookie = cookies.find(cookie => cookie.trim().startsWith('connect.sid='));
-        console.log("Session cookie present:", !!sessionCookie);
-        if (sessionCookie) {
-            console.log("Session cookie value:", sessionCookie.trim());
+        if (window.opener) {
+            // Notify main window
+            window.opener.postMessage({ status: "success" }, frontend_URL);
+            // Close popup
+            window.close();
         }
+    }, []);
 
-        if (success) {
-            // Add a delay to ensure cookie is processed by browser
-            const attemptAuthCheck = (attempt = 1) => {
-                console.log(`Auth check attempt ${attempt}`);
-
-                dispatch(checkAuth())
-                    .unwrap()
-                    .then((userData) => {
-                        console.log("OAuth success, user:", userData);
-                        navigate(redirectTo, { replace: true });
-                    })
-                    .catch((error) => {
-                        console.error(`Auth check failed attempt ${attempt}:`, error);
-
-                        if (attempt < 3) {
-                            // Retry after delay
-                            setTimeout(() => attemptAuthCheck(attempt + 1), 1000 * attempt);
-                        } else {
-                            // Final fallback
-                            console.error("All auth checks failed, redirecting to login");
-                            navigate("/login", {
-                                state: { error: "Authentication failed. Please try logging in manually." }
-                            });
-                        }
-                    });
-            };
-
-            // Start first attempt after short delay
-            setTimeout(() => attemptAuthCheck(1), 500);
-        } else {
-            navigate("/login", {
-                state: { error: "OAuth authentication was not successful" }
-            });
-        }
-    }, [dispatch, navigate, searchParams]);
-
-    return (
-        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "100vh" }}>
-            <div className="text-center">
-                <div className="spinner-border text-primary mb-3" role="status">
-                    <span className="visually-hidden">Completing authentication...</span>
-                </div>
-                <div>Completing authentication...</div>
-                <small className="text-muted">This may take a few seconds</small>
-            </div>
-        </div>
-    );
+    return <div>Logging in...</div>;
 };
 
 export default OauthSuccess;
