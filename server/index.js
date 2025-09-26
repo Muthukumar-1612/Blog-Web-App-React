@@ -44,6 +44,7 @@ app.use(session({
         secure: isProd ? true : false,
         sameSite: isProd ? "none" : "lax",
         maxAge: 1000 * 60 * 60 * 24,
+        domain: isProd ? '.onrender.com' : undefined
     }
 }));
 
