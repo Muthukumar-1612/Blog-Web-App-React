@@ -1,34 +1,15 @@
 import React, { useState } from "react";
 
-export const GoogleButton = ({ backend_URL }) => {
+export const GoogleButton = ({ backend_URL, redirectTo }) => {
     const [loading, setLoading] = useState(false);
 
     const handleClick = () => {
 
         setLoading(true);
 
-        const oauthUrl = `${backend_URL}/api/auth/google?redirectTo=${window.location.pathname}`;
-
-        const width = 500;
-        const height = 600;
-
-        const left = window.screenX + (window.outerWidth - width) / 2;
-        const top = window.screenY + (window.outerHeight - height) / 2;
-
-        window.open(
-            oauthUrl,
-            "_blank",
-            `width=${width},height=${height},left=${left},top=${top}`
-        );
-
-        setTimeout(() => {
-            setLoading(false);
-        }, 3000)
+        window.location.href = `${backend_URL}/api/auth/google?redirectTo=${redirectTo || "/"}`;
 
     };
-
-
-
 
     return (
         <button
