@@ -53,8 +53,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use((req, res, next) => {
-  console.log("Cookies:", req.headers.cookie);
-  console.log("Session:", req.session);
+  console.log("Request:", req.method, req.url);
+  console.log("Cookies received:", req.headers.cookie);
   next();
 });
 
