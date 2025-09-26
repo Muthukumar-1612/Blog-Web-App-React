@@ -18,6 +18,8 @@ env.config({ path: path.join(__dirname, ".env") });
 
 const isProd = process.env.NODE_ENV === "production";
 
+console.log(isProd ? process.env.FRONTEND_RENDER_URL : process.env.FRONTEND_LOCAL_URL);
+
 const port = 5000;
 
 const app = express();
