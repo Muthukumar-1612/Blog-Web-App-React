@@ -41,15 +41,21 @@ app.use(session({
     saveUninitialized: false,
     cookie: {
         httpOnly: true,
-        secure: isProd ? true : false,
-        sameSite: isProd ? "none" : "lax",
+        secure: true,
+        sameSite: "none",
         maxAge: 1000 * 60 * 60 * 24,
-        domain: isProd ? '.onrender.com' : undefined
+        domain: '.onrender.com'
     }
 }));
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use((req, res, next) => {
+  console.log("Cookies:", req.headers.cookie);
+  console.log("Session:", req.session);
+  next();
+});
 
 app.use("/api/posts", postRouter);
 app.use("/api/auth", userRouter);
