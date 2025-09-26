@@ -83,6 +83,15 @@ router.post("/login", (req, res, next) => {
         if (!user) {
             return res.status(401).json({ message: info.message });
         }
+        // Debug cookie
+  res.cookie("debug", "testcookie", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
+  });
+
+  console.log("Session after login:", req.session);
+
         req.logIn(user, (err) => {
             if (err) {
                 return res.status(500).json({ message: "Login failed. Please try again." });
