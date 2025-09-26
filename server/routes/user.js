@@ -41,8 +41,11 @@ router.get("/google/callback",
     }),
     (req, res) => {
         const redirectTo = req.query.state || "/";
-        console.log("OAuth successful, redirecting to:", redirectTo);
-        res.redirect(`${FRONTEND_URL}/oauth-success?redirectTo=${redirectTo}`);
+        // console.log("OAuth successful, redirecting to:", redirectTo);
+        // Ensure session is persisted before redirect
+        req.session.save(() => {
+            res.redirect(`${FRONTEND_URL}/oauth-success?redirectTo=${redirectTo}`);
+        });
     }
 );
 
