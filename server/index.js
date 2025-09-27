@@ -77,15 +77,17 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use((req, res, next) => {
-    console.log("=== REQUEST HEADERS ===");
-    console.log("Origin:", req.headers.origin);
-    console.log("Host:", req.headers.host);
-    console.log("Cookie Header:", req.headers.cookie);
-    console.log("Session:", req.session);
-    console.log("=====================");
+// Add this before your auth routes
+app.use('/api/auth/google', (req, res, next) => {
+    console.log("=== GOOGLE OAUTH DEBUG ===");
+    console.log("Method:", req.method);
+    console.log("Path:", req.path);
+    console.log("Query:", req.query);
+    console.log("Headers:", req.headers);
+    console.log("Cookies:", req.cookies);
+    console.log("===========================");
     next();
-});;
+});
 
 app.use("/api/posts", postRouter);
 app.use("/api/auth", userRouter);
