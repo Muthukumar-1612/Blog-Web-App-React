@@ -35,39 +35,34 @@ router.get("/google", (req, res, next) => {
 });
 
 router.get("/google/callback",
-    (req, res, next) => {
-        console.log("=== BEFORE GOOGLE AUTHENTICATION ===");
-        console.log("Session ID:", req.sessionID);
-        console.log("Cookies:", req.cookies);
-        console.log("================================");
-        next();
-    },
     passport.authenticate("google", {
         failureRedirect: FRONTEND_URL + "/login?error=oauth_failed",
         session: true
     }),
     (req, res) => {
-        console.log("=== AFTER SUCCESSFUL GOOGLE AUTH ===");
-        console.log("User authenticated:", req.user);
-        console.log("Session ID:", req.sessionID);
-        console.log("================================");
-
         const redirectTo = req.query.state || "/";
 
-        // Ensure session is saved before redirect
+        console.log("=== BEFORE REDIRECT ===");
+        console.log("New Session ID:", req.sessionID);
+        console.log("Session cookie that will be set:", req.session.cookie);
+
+        // Ensure session is saved
         req.session.save((err) => {
             if (err) {
                 console.error("Session save error:", err);
                 return res.redirect(FRONTEND_URL + "/login?error=session_error");
             }
 
-            console.log("Session saved successfully, redirecting to frontend...");
-            const redirectUrl = `${FRONTEND_URL}/oauth-success?redirectTo=${encodeURIComponent(redirectTo)}&success=true`;
+            console.log("Session saved, setting cookie manually...");
+
+            // Construct the redirect URL
+            const redirectUrl = `${FRONTEND_URL}/oauth-success?redirectTo=${encodeURIComponent(redirectTo)}&success=true&sessionCheck=true`;
+
+            // Redirect with explicit cookie headers if needed
             res.redirect(redirectUrl);
         });
     }
 );
-
 router.post("/register", async (req, res) => {
     let { name, email, password } = req.body;
     try {
