@@ -84,7 +84,8 @@ const initialState = {
     status: "idle",
     error: null,      // store error message
     code: null,       // store HTTP status code
-    message: null,    // store backend message - success/error
+    message: null,    // store backend message
+    token: null,
 };
 
 const authReducer = createSlice({
@@ -108,6 +109,7 @@ const authReducer = createSlice({
                 state.message = null;
             })
             .addCase(user_register.fulfilled, (state, action) => {
+                state.token = action.payload.token;
                 state.status = "succeeded";
                 state.user = action.payload.user;
                 state.message = action.payload.message;
@@ -126,6 +128,7 @@ const authReducer = createSlice({
                 state.message = null;
             })
             .addCase(user_login.fulfilled, (state, action) => {
+                state.token = action.payload.token;
                 state.status = "succeeded";
                 state.user = action.payload.user;
                 state.message = action.payload.message;
@@ -143,6 +146,7 @@ const authReducer = createSlice({
                 state.message = null;
             })
             .addCase(checkAuth.fulfilled, (state, action) => {
+                state.token = action.payload.token;
                 state.status = "succeeded";
                 state.user = action.payload.user;
                 state.code = 200;
