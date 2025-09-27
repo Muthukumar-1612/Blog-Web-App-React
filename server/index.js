@@ -29,6 +29,8 @@ app.set("trust proxy", 1);
 app.use(cors({
     origin: "https://blog-web-app-react-frontend.onrender.com",
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie']
 }));
 
 app.use(express.json());
