@@ -35,9 +35,6 @@ app.use(cors({
     exposedHeaders: ['Set-Cookie']
 }));
 
-// Handle preflight requests
-app.options("/*", cors());
-
 app.use(express.json());
 
 app.use(session({
