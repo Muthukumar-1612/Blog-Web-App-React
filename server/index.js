@@ -24,14 +24,34 @@ const app = express();
 
 app.set("trust proxy", 1);
 
+app.use((req, res, next) => {
+    // Special handling for OAuth callback (no Origin header)
+    if (req.path === '/api/auth/google/callback' && !req.headers.origin) {
+        res.header('Access-Control-Allow-Origin', FRONTEND_URL);
+        res.header('Access-Control-Allow-Credentials', 'true');
+    }
+    next();
+});
+
 app.use(cors({
-    origin: isProd ? [
-        "https://blog-web-app-react-frontend.onrender.com",
-        "https://blog-web-app-react.onrender.com"
-    ] : process.env.FRONTEND_LOCAL_URL,
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or OAuth callbacks)
+        if (!origin && isProd) return callback(null, true);
+        
+        const allowedOrigins = isProd ? [
+            "https://blog-web-app-react-frontend.onrender.com",
+            "https://blog-web-app-react.onrender.com"
+        ] : [process.env.FRONTEND_LOCAL_URL];
+        
+        if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Cookie'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
     exposedHeaders: ['Set-Cookie']
 }));
 
@@ -45,6 +65,7 @@ app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    proxy: true,
     cookie: {
         httpOnly: true,
         secure: true,
@@ -56,21 +77,12 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Add this after session middleware but before routes
-app.use((req, res, next) => {
-    if (isProd) {
-        res.header('Access-Control-Allow-Credentials', 'true');
-        res.header('Access-Control-Allow-Origin', req.headers.origin || "https://blog-web-app-react-frontend.onrender.com");
-        res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With, Cookie');
-    }
-    next();
-});
 app.use((req, res, next) => {
     console.log("=== REQUEST HEADERS ===");
     console.log("Origin:", req.headers.origin);
     console.log("Host:", req.headers.host);
     console.log("Cookie Header:", req.headers.cookie);
+    console.log("Session:", req.session);
     console.log("=====================");
     next();
 });;
