@@ -10,14 +10,38 @@ const OauthSuccess = () => {
 
     useEffect(() => {
         const redirectTo = searchParams.get("redirectTo") || "/";
-        // Ask backend for logged-in user
-        dispatch(checkAuth())
-            .unwrap()
-            .then(() => navigate(redirectTo, { replace: true }))
-            .catch(() => navigate("/login"));
+        const success = searchParams.get("success") === "true";
+
+        if (success) {
+            // Small delay to ensure session is saved
+            setTimeout(() => {
+                dispatch(checkAuth())
+                    .unwrap()
+                    .then(() => {
+                        navigate(redirectTo, { replace: true });
+                    })
+                    .catch((error) => {
+                        console.error("OAuth auth check failed:", error);
+                        navigate("/login", { 
+                            state: { error: "OAuth authentication failed" } 
+                        });
+                    });
+            }, 500);
+        } else {
+            navigate("/login", { 
+                state: { error: "OAuth flow was not successful" } 
+            });
+        }
     }, [dispatch, navigate, searchParams]);
 
-    return null;
+    return (
+        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "100vh" }}>
+            <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Completing authentication...</span>
+            </div>
+            <span className="ms-3">Completing authentication...</span>
+        </div>
+    );
 };
 
 export default OauthSuccess;
