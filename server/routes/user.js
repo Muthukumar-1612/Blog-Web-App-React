@@ -43,26 +43,30 @@ router.get("/google/callback",
         const redirectTo = req.query.state || "/";
 
         console.log("=== BEFORE REDIRECT ===");
-        console.log("New Session ID:", req.sessionID);
-        console.log("Session cookie that will be set:", req.session.cookie);
+        console.log("User:", req.user);
+        console.log("Session ID:", req.sessionID);
+        console.log("Is authenticated:", req.isAuthenticated());
 
-        // Ensure session is saved
+        // Important: Don't create a new session, use the existing one
+        // Just ensure the user is attached to the current session
         req.session.save((err) => {
             if (err) {
                 console.error("Session save error:", err);
                 return res.redirect(FRONTEND_URL + "/login?error=session_error");
             }
 
-            console.log("Session saved, setting cookie manually...");
+            console.log("=== AFTER SESSION SAVE ===");
+            console.log("Session ID preserved:", req.sessionID);
+            console.log("User in session:", req.session.passport);
 
-            // Construct the redirect URL
-            const redirectUrl = `${FRONTEND_URL}/oauth-success?redirectTo=${encodeURIComponent(redirectTo)}&success=true&sessionCheck=true`;
-
-            // Redirect with explicit cookie headers if needed
+            // Redirect to frontend with success indicator
+            const redirectUrl = `${FRONTEND_URL}/oauth-success?redirectTo=${encodeURIComponent(redirectTo)}&success=true`;
+            console.log("Redirecting to:", redirectUrl);
             res.redirect(redirectUrl);
         });
     }
 );
+
 router.post("/register", async (req, res) => {
     let { name, email, password } = req.body;
     try {

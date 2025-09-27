@@ -12,8 +12,17 @@ const OauthSuccess = () => {
         const redirectTo = searchParams.get("redirectTo") || "/";
         const success = searchParams.get("success") === "true";
 
-        console.log("Current cookies:", document.cookie);
-        console.log("Current domain:", window.location.hostname);
+        console.log("=== BROWSER COOKIE DEBUG ===");
+        console.log("All cookies:", document.cookie);
+        console.log("Current URL:", window.location.href);
+        console.log("Domain:", window.location.hostname);
+        // Check if connect.sid cookie is present
+        const cookies = document.cookie.split(';');
+        const sessionCookie = cookies.find(cookie => cookie.trim().startsWith('connect.sid='));
+        console.log("Session cookie present:", !!sessionCookie);
+        if (sessionCookie) {
+            console.log("Session cookie value:", sessionCookie.trim());
+        }
 
         if (success) {
             // Add a delay to ensure cookie is processed by browser

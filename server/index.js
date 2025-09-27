@@ -81,7 +81,7 @@ app.use(session({
         secure: isProd,
         sameSite: isProd ? "none" : "lax",
         maxAge: 1000 * 60 * 60 * 24,
-        domain: isProd ? '.render.com' : undefined
+        domain: isProd ? 'blog-web-app-react.onrender.com' : undefined
     }
 }));
 
@@ -110,6 +110,15 @@ app.use('/api/auth/google', (req, res, next) => {
         console.log("Cookies:", req.cookies);
         console.log("=====================================");
     }
+    next();
+});
+
+// Add this before your routes
+app.use('/api/auth/google/callback', (req, res, next) => {
+    // Set explicit headers for OAuth callback
+    res.header('Access-Control-Allow-Origin', FRONTEND_URL);
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Expose-Headers', 'Set-Cookie');
     next();
 });
 
