@@ -16,7 +16,6 @@ const OAuthSuccess = () => {
         if (token) {
             dispatch(setToken(token)); // store in redux + localStorage
             dispatch(checkAuth());     // fetch user info
-            window.history.replaceState(null, "", redirectTo);
             navigate(redirectTo, { replace: true });
         } else {
             navigate("/login");
