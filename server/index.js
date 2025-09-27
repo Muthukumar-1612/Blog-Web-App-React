@@ -9,6 +9,7 @@ import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 import { db } from "./db.js";
 import pgSession from "connect-pg-simple";
+import cookieParser from "cookie-parser";
 
 const PgSession = pgSession(session);
 
@@ -18,7 +19,7 @@ env.config({ path: path.join(__dirname, ".env") });
 
 const isProd = process.env.NODE_ENV === "production";
 
-const FRONTEND_URL = isProd ? process.env.FRONTEND_RENDER_URL : process.env.FRONTEND_LOCAL_URL; 
+const FRONTEND_URL = isProd ? process.env.FRONTEND_RENDER_URL : process.env.FRONTEND_LOCAL_URL;
 
 const port = 5000;
 
@@ -37,17 +38,23 @@ app.use((req, res, next) => {
 
 app.use(cors({
     origin: function (origin, callback) {
-        // Allow requests with no origin (like mobile apps or OAuth callbacks)
-        if (!origin && isProd) return callback(null, true);
-        
+        // Allow requests with no origin (like OAuth callbacks from Google)
+        if (!origin) {
+            return callback(null, true);
+        }
+
         const allowedOrigins = isProd ? [
             "https://blog-web-app-react-frontend.onrender.com",
             "https://blog-web-app-react.onrender.com"
-        ] : [process.env.FRONTEND_LOCAL_URL];
-        
-        if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+        ] : [
+            process.env.FRONTEND_LOCAL_URL,
+            "http://localhost:5173"
+        ];
+
+        if (allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
+            console.log("CORS blocked origin:", origin);
             callback(new Error('Not allowed by CORS'));
         }
     },
@@ -58,6 +65,7 @@ app.use(cors({
 }));
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.use(session({
     store: new PgSession({
@@ -70,8 +78,8 @@ app.use(session({
     proxy: true,
     cookie: {
         httpOnly: true,
-        secure: true,
-        sameSite: "none",
+        secure: isProd,
+        sameSite: isProd ? "none" : "lax",
         maxAge: 1000 * 60 * 60 * 24,
     }
 }));
@@ -79,15 +87,28 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Add this before your auth routes
-app.use('/api/auth/google', (req, res, next) => {
-    console.log("=== GOOGLE OAUTH DEBUG ===");
-    console.log("Method:", req.method);
+app.use((req, res, next) => {
+    console.log("=== REQUEST DEBUG ===");
     console.log("Path:", req.path);
-    console.log("Query:", req.query);
-    console.log("Headers:", req.headers);
-    console.log("Cookies:", req.cookies);
-    console.log("===========================");
+    console.log("Method:", req.method);
+    console.log("Headers.cookie:", req.headers.cookie);
+    console.log("Parsed cookies:", req.cookies); // This will now work with cookie-parser
+    console.log("Session ID:", req.sessionID);
+    console.log("Authenticated:", req.isAuthenticated());
+    console.log("User:", req.user);
+    console.log("=====================");
+    next();
+});
+
+// Specialized OAuth debugging
+app.use('/api/auth/google', (req, res, next) => {
+    if (req.path === '/callback') {
+        console.log("=== GOOGLE OAUTH CALLBACK DETAILS ===");
+        console.log("Query params:", req.query);
+        console.log("Session before auth:", req.session);
+        console.log("Cookies:", req.cookies);
+        console.log("=====================================");
+    }
     next();
 });
 
