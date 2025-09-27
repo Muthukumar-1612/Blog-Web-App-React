@@ -41,16 +41,18 @@ router.get("/google/callback",
     }),
     (req, res) => {
         const redirectTo = req.query.state || "/";
-        // User has successfully authenticated here
-        res.cookie("debug", "testcookie", {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
+        
+        // Ensure session is saved before redirect
+        req.session.save((err) => {
+            if (err) {
+                console.error("Session save error:", err);
+                return res.redirect(FRONTEND_URL + "/login?error=session_error");
+            }
+            
+            // Construct the redirect URL with success indicator
+            const redirectUrl = `${FRONTEND_URL}/oauth-success?redirectTo=${encodeURIComponent(redirectTo)}&success=true`;
+            res.redirect(redirectUrl);
         });
-
-        console.log("Session after login:", req.session);
-        res.redirect(`${FRONTEND_URL}/oauth-success?redirectTo=${redirectTo}`);
-    
     }
 );
 
