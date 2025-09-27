@@ -28,7 +28,7 @@ export const GoogleButton = ({ backend_URL, redirectTo }) => {
                 </>
             ) : (
                 <>
-                    <img src="images/icons8-google-logo.svg" alt="google-logo" />
+                    <img width="48" height="48" src="https://img.icons8.com/color/48/google-logo.png" alt="google-logo" />
                     <span>Continue with Google</span>
                 </>
             )}

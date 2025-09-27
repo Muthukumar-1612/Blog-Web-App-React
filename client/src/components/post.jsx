@@ -8,7 +8,7 @@ function Post() {
     const { id } = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const posts = useSelector(state => state.posts.blogList);
+    const { blogList: posts } = useSelector(state => state.posts);
 
     const { user } = useSelector((state) => state.auth);
 
@@ -20,7 +20,13 @@ function Post() {
     const post = posts.find(post => post.id == id);
 
     if (!post) {
-        return <h2 className="text-center mt-5">Post not found</h2>;
+        return (
+            <div className="d-flex justify-content-center align-items-center vh-100">
+                <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        );
     }
 
     const deletePost = async (e) => {
