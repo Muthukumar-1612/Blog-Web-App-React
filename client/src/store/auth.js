@@ -4,25 +4,11 @@ import axios from "axios";
 const isProd = import.meta.env.VITE_ENV === "production";
 const backend_URL = isProd ? import.meta.env.VITE_RENDER_BACKEND_URL : import.meta.env.VITE_LOCAL_BACKEND_URL;
 
-// Set axios defaults to include credentials
-axios.defaults.withCredentials = true;
-axios.defaults.xsrfCookieName = 'csrfToken';
-axios.defaults.xsrfHeaderName = 'X-CSRF-Token';
-
-// Create axios instance with defaults
-const api = axios.create({
-    baseURL: backend_URL,
-    withCredentials: true,
-    headers: {
-        'Content-Type': 'application/json',
-    }
-});
-
 export const user_register = createAsyncThunk(
     "user/register",
     async (user, { rejectWithValue }) => {
         try {
-            const res = await axios.post("/api/auth/register", user);
+            const res = await axios.post(`${backend_URL}/api/auth/register`, user, { withCredentials: true });
             // console.log(res.data);
             return res.data; // { message, user }
         } catch (err) {
@@ -41,7 +27,7 @@ export const user_login = createAsyncThunk(
     "user/login",
     async (user, { rejectWithValue }) => {
         try {
-            const res = await api.post("/api/auth/login", user);
+            const res = await axios.post(`${backend_URL}/api/auth/login`, user, { withCredentials: true });
             return res.data; // { message, user }
         } catch (err) {
             if (err.response) {
@@ -59,7 +45,7 @@ export const checkAuth = createAsyncThunk(
     "user/checkAuth",
     async (_, { rejectWithValue }) => {
         try {
-            const res = await api.get("/api/auth/user");
+            const res = await axios.get(`${backend_URL}/api/auth/user`, { withCredentials: true });
             // console.log("checkAuth success:", res.data);
             return res.data; // { user }
         } catch (err) {
@@ -79,7 +65,7 @@ export const user_logout = createAsyncThunk(
     "user/logout",
     async (_, { rejectWithValue }) => {
         try {
-            const res = await api.post("/api/auth/logout");
+            const res = await axios.post(`${backend_URL}/api/auth/logout`, {}, { withCredentials: true });
             return res.data; // { message }
         } catch (err) {
             if (err.response) {
