@@ -26,23 +26,22 @@ router.get("/user", (req, res) => {
     return res.status(401).json({ message: "You are unauthorized. Please try logging in" });
 });
 
-router.get("/google",
-    passport.authenticate("google", { scope: ["profile", "email"] })
-);
+router.get("/google", (req, res, next) => {
+    const redirectTo = req.query.redirectTo || "/";
+    passport.authenticate("google", {
+        scope: ["profile", "email"],
+        state: redirectTo,
+    })(req, res, next);
+});
 
 router.get("/google/callback",
-    (req, res, next) => {
-        // allow popup to talk to opener
-        res.setHeader("Cross-Origin-Opener-Policy", "unsafe-none");
-        next();
-    },
     passport.authenticate("google", {
         failureRedirect: FRONTEND_URL + "/login",
         session: true
     }),
     (req, res) => {
-        // redirect popup to frontend page, same-origin
-        const redirectTo = req.query.redirectTo || "/";
+        const redirectTo = req.query.state || "/";
+        console.log("OAuth successful, redirecting to:", redirectTo);
         res.redirect(`${FRONTEND_URL}/oauth-success?redirectTo=${redirectTo}`);
     }
 );
@@ -76,29 +75,16 @@ router.post("/register", async (req, res) => {
 router.post("/login", (req, res, next) => {
     passport.authenticate("local", (err, user, info) => {
         if (err) {
-            return res
-                .status(500)
-                .json({ message: "Something went wrong. Please try again later." });
+            return res.status(500).json({ message: "Something went wrong. Please try again later." });
         }
         if (!user) {
             return res.status(401).json({ message: info.message });
         }
-
-        // Log the user in
         req.logIn(user, (err) => {
             if (err) {
-                return res
-                    .status(500)
-                    .json({ message: "Login failed. Please try again." });
+                return res.status(500).json({ message: "Login failed. Please try again." });
             }
-
-            // Ensure session is saved before sending response
-            req.session.save(() => {
-                return res.status(200).json({
-                    message: "Login successful",
-                    user: { id: user.id, name: user.name, email: user.email },
-                });
-            });
+            return res.status(200).json({ message: "Login successful", user: { id: user.id, name: user.name, email: user.email } });
         });
     })(req, res, next);
 });

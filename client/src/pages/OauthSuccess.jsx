@@ -9,15 +9,15 @@ const OauthSuccess = () => {
     const [searchParams] = useSearchParams();
 
     useEffect(() => {
-        if (window.opener) {
-            // Notify main window
-            window.opener.postMessage({ status: "success" }, frontend_URL);
-            // Close popup
-            window.close();
-        }
-    }, []);
+        const redirectTo = searchParams.get("redirectTo") || "/";
+        // Ask backend for logged-in user
+        dispatch(checkAuth())
+            .unwrap()
+            .then(() => navigate(redirectTo, { replace: true }))
+            .catch(() => navigate("/login"));
+    }, [dispatch, navigate, searchParams]);
 
-    return <div>Logging in...</div>;
+    return null;
 };
 
 export default OauthSuccess;
