@@ -4,6 +4,11 @@ import axios from "axios";
 const isProd = import.meta.env.VITE_ENV === "production";
 const backend_URL = isProd ? import.meta.env.VITE_RENDER_BACKEND_URL : import.meta.env.VITE_LOCAL_BACKEND_URL;
 
+// Set axios defaults to include credentials
+axios.defaults.withCredentials = true;
+axios.defaults.xsrfCookieName = 'csrfToken';
+axios.defaults.xsrfHeaderName = 'X-CSRF-Token';
+
 // Create axios instance with defaults
 const api = axios.create({
     baseURL: backend_URL,
