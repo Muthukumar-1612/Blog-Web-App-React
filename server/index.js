@@ -29,6 +29,11 @@ app.use(express.json());
 
 app.use(passport.initialize());
 
+// health check route
+app.get("/health", (req, res) => {
+    res.status(200).json({ status: "ok" });
+});
+
 app.use("/api/posts", postRouter);
 app.use("/api/auth", userRouter);
 
