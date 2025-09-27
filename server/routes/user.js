@@ -88,20 +88,14 @@ router.post("/login", (req, res, next) => {
         if (!user) {
             return res.status(401).json({ message: info.message });
         }
-        // Debug cookie
-  res.cookie("debug", "testcookie", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
-  });
 
-  console.log("Session after login:", req.session);
-
-        req.logIn(user, (err) => {
-            if (err) {
-                return res.status(500).json({ message: "Login failed. Please try again." });
-            }
-            return res.status(200).json({ message: "Login successful", user: { id: user.id, name: user.name, email: user.email } });
+        // Ensure session is saved before sending response
+            req.session.save(() => {
+                return res.status(200).json({ 
+                    message: "Login successful", 
+                    user: { id: user.id, name: user.name, email: user.email } 
+                });
+            });
         });
     })(req, res, next);
 });
