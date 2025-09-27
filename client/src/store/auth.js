@@ -4,11 +4,20 @@ import axios from "axios";
 const isProd = import.meta.env.VITE_ENV === "production";
 const backend_URL = isProd ? import.meta.env.VITE_RENDER_BACKEND_URL : import.meta.env.VITE_LOCAL_BACKEND_URL;
 
+// Create axios instance with defaults
+const api = axios.create({
+    baseURL: backend_URL,
+    withCredentials: true,
+    headers: {
+        'Content-Type': 'application/json',
+    }
+});
+
 export const user_register = createAsyncThunk(
     "user/register",
     async (user, { rejectWithValue }) => {
         try {
-            const res = await axios.post(`${backend_URL}/api/auth/register`, user, { withCredentials: true });
+            const res = await axios.post("/api/auth/register", user);
             // console.log(res.data);
             return res.data; // { message, user }
         } catch (err) {
@@ -27,7 +36,7 @@ export const user_login = createAsyncThunk(
     "user/login",
     async (user, { rejectWithValue }) => {
         try {
-            const res = await axios.post(`${backend_URL}/api/auth/login`, user, { withCredentials: true });
+            const res = await api.post("/api/auth/login", user);
             return res.data; // { message, user }
         } catch (err) {
             if (err.response) {
@@ -45,7 +54,7 @@ export const checkAuth = createAsyncThunk(
     "user/checkAuth",
     async (_, { rejectWithValue }) => {
         try {
-            const res = await axios.get(`${backend_URL}/api/auth/user`, { withCredentials: true });
+            const res = await api.get("/api/auth/user");
             // console.log("checkAuth success:", res.data);
             return res.data; // { user }
         } catch (err) {
@@ -65,7 +74,7 @@ export const user_logout = createAsyncThunk(
     "user/logout",
     async (_, { rejectWithValue }) => {
         try {
-            const res = await axios.post(`${backend_URL}/api/auth/logout`, {}, { withCredentials: true });
+            const res = await api.post("/api/auth/logout");
             return res.data; // { message }
         } catch (err) {
             if (err.response) {
