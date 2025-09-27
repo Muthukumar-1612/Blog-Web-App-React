@@ -1,23 +1,28 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { checkAuth } from "../store/auth";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { setToken, checkAuth } from "../store/auth";
+import { useNavigate, useLocation } from "react-router-dom";
 
-const OauthSuccess = () => {
+const OAuthSuccess = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
+    const location = useLocation();
 
     useEffect(() => {
-        const redirectTo = searchParams.get("redirectTo") || "/";
-        // Ask backend for logged-in user
-        dispatch(checkAuth())
-            .unwrap()
-            .then(() => navigate(redirectTo, { replace: true }))
-            .catch(() => navigate("/login"));
-    }, [dispatch, navigate, searchParams]);
+        const params = new URLSearchParams(location.search);
+        const token = params.get("token");
+        const redirectTo = params.get("redirectTo") || "/";
 
-    return null;
+        if (token) {
+            dispatch(setToken(token)); // store in redux + localStorage
+            dispatch(checkAuth());     // fetch user info
+            navigate(redirectTo, { replace: true });
+        } else {
+            navigate("/login");
+        }
+    }, [dispatch, navigate, location]);
+
+    return <p>Signing you in...</p>;
 };
 
-export default OauthSuccess;
+export default OAuthSuccess;
