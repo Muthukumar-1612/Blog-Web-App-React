@@ -18,8 +18,6 @@ env.config({ path: path.join(__dirname, ".env") });
 
 const isProd = process.env.NODE_ENV === "production";
 
-console.log( "URL", isProd ? process.env.FRONTEND_RENDER_URL : process.env.FRONTEND_LOCAL_URL);
-
 const port = 5000;
 
 const app = express();
@@ -27,11 +25,18 @@ const app = express();
 app.set("trust proxy", 1);
 
 app.use(cors({
-    origin: "https://blog-web-app-react-frontend.onrender.com",
+    origin: isProd ? [
+        "https://blog-web-app-react-frontend.onrender.com",
+        "https://blog-web-app-react.onrender.com"
+    ] : process.env.FRONTEND_LOCAL_URL,
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie']
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Cookie'],
+    exposedHeaders: ['Set-Cookie']
 }));
+
+// Handle preflight requests
+app.options('*', cors());
 
 app.use(express.json());
 
@@ -54,16 +59,24 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Add this before your routes for debugging
+// Add this after session middleware but before routes
 app.use((req, res, next) => {
-    console.log("=== SESSION DEBUG ===");
-    console.log("Cookies:", req.headers.cookie);
-    console.log("Session ID:", req.sessionID);
-    console.log("Authenticated:", req.isAuthenticated());
-    console.log("User:", req.user);
-    console.log("=====================");
+    if (isProd) {
+        res.header('Access-Control-Allow-Credentials', 'true');
+        res.header('Access-Control-Allow-Origin', req.headers.origin || "https://blog-web-app-react-frontend.onrender.com");
+        res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With, Cookie');
+    }
     next();
 });
+app.use((req, res, next) => {
+    console.log("=== REQUEST HEADERS ===");
+    console.log("Origin:", req.headers.origin);
+    console.log("Host:", req.headers.host);
+    console.log("Cookie Header:", req.headers.cookie);
+    console.log("=====================");
+    next();
+});;
 
 app.use("/api/posts", postRouter);
 app.use("/api/auth", userRouter);
