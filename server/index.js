@@ -54,10 +54,15 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Add this before your routes for debugging
 app.use((req, res, next) => {
-  console.log("Request:", req.method, req.url);
-  console.log("Cookies received:", req.headers.cookie);
-  next();
+    console.log("=== SESSION DEBUG ===");
+    console.log("Cookies:", req.headers.cookie);
+    console.log("Session ID:", req.sessionID);
+    console.log("Authenticated:", req.isAuthenticated());
+    console.log("User:", req.user);
+    console.log("=====================");
+    next();
 });
 
 app.use("/api/posts", postRouter);
