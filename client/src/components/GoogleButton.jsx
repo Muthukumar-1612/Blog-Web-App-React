@@ -1,15 +1,37 @@
 import React, { useState } from "react";
 
-export const GoogleButton = ({ backend_URL, redirectTo }) => {
+export const GoogleButton = ({ backend_URL }) => {
     const [loading, setLoading] = useState(false);
 
     const handleClick = () => {
 
         setLoading(true);
 
-        window.location.href = `${backend_URL}/api/auth/google?redirectTo=${redirectTo || "/"}`;
+        const oauthUrl = `${backend_URL}/api/auth/google`;
+
+        const width = 500;
+        const height = 600;
+
+        const left = window.screenX + (window.outerWidth - width) / 2;
+        const top = window.screenY + (window.outerHeight - height) / 2;
+
+        const popup = window.open(
+            oauthUrl,
+            "_blank",
+            `width=${width},height=${height},left=${left},top=${top}`
+        );
+
+        const timer = setInterval(() => {
+            if (popup.closed) {
+                clearInterval(timer); // stop polling
+                setLoading(false);    // reset loading state
+            }
+        }, 500);
 
     };
+
+
+
 
     return (
         <button
