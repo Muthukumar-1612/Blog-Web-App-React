@@ -52,8 +52,16 @@ const postReducer = createSlice({
     extraReducers: (builder) => {
         builder
             // GET
+            .addCase(get_post.pending, (state) => {
+                state.status = "loading";
+            })
             .addCase(get_post.fulfilled, (state, action) => {
+                state.status = "idle";
                 state.blogList = action.payload;
+            })
+            .addCase(get_post.rejected, (state, action) => {
+                state.status = "error";
+                state.error = action.payload;
             })
 
             // ADD

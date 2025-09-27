@@ -104,12 +104,30 @@ const authReducer = createSlice({
     },
     extraReducers: (builder) => {
         builder
+            // User Register
+            .addCase(user_register.pending, (state) => {
+                state.status = "loading";
+                state.error = null;
+                state.message = null;
+            })
             .addCase(user_register.fulfilled, (state, action) => {
                 state.token = action.payload.token;
                 state.user = action.payload.user;
                 state.status = "succeeded";
                 state.message = action.payload.message;
                 state.code = 201;
+            })
+            .addCase(user_register.rejected, (state, action) => {
+                state.status = "failed";
+                state.error = action.payload?.message || "Something went wrong";
+                state.code = action.payload?.status || 500;
+            })
+
+            // User Login
+            .addCase(user_login.pending, (state) => {
+                state.status = "loading";
+                state.error = null;
+                state.message = null;
             })
             .addCase(user_login.fulfilled, (state, action) => {
                 state.token = action.payload.token;
@@ -118,17 +136,45 @@ const authReducer = createSlice({
                 state.message = action.payload.message;
                 state.code = 202;
             })
+            .addCase(user_login.rejected, (state, action) => {
+                state.status = "failed";
+                state.error = action.payload?.message || "Something went wrong";
+                state.code = action.payload?.status || 500;
+            })
+
+            // Check Auth
+            .addCase(checkAuth.pending, (state) => {
+                state.status = "loading";
+                state.error = null;
+            })
             .addCase(checkAuth.fulfilled, (state, action) => {
                 state.token = action.payload.token;
                 state.user = action.payload.user;
                 state.status = "succeeded";
                 state.code = 200;
             })
+            .addCase(checkAuth.rejected, (state, action) => {
+                state.status = "failed";
+                state.error = action.payload?.message || "Something went wrong";
+                state.token = null;
+                state.user = null;
+                state.code = action.payload?.status || 500;
+            })
+
+            // Logout
+            .addCase(user_logout.pending, (state) => {
+                state.status = "loading";
+            })
             .addCase(user_logout.fulfilled, (state) => {
                 state.user = null;
                 state.token = null;
                 state.status = "idle";
                 state.message = "Logged out";
+                state.error = null;
+            })
+            .addCase(user_logout.rejected, (state, action) => {
+                state.status = "failed";
+                state.error = action.payload?.message || "Logout failed";
             });
     },
 });
