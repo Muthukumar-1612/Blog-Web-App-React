@@ -7,33 +7,41 @@
 ![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-blue?logo=postgresql)  
 ![Cloudinary](https://img.shields.io/badge/Images-Cloudinary-4285F4?logo=cloudinary)  
 
-An **upgraded version** of my previous **EJS Blog Web App**, rebuilt using **React** for a modern frontend experience.  
-This version brings a faster, more interactive UI with Redux state management while keeping the same powerful backend.  
+An **upgraded version** of my previous **EJS Blog Web App**, rebuilt using **React** for a modern frontend experience.
+This version brings a faster, more interactive UI with Redux state management while keeping the same powerful backend.
 
 ---
 
-## 🚀 Features  
-
-- ✍️ Create, edit, and delete blog posts  
-- 🖼️ Upload and display images (Cloudinary integration)  
-- 📅 Auto-formatted date for posts  
-- 🔄 Real-time updates with Redux Toolkit  
-- 🎨 Responsive UI with modern design  
-- ⚡ Optimized API handling with Axios  
+## 🔗 Live Demo  
+[https://blog-web-app-react-frontend.onrender.com](https://blog-web-app-react-frontend.onrender.com)
 
 ---
 
-## 🛠️ Tech Stack  
+## 🚀 Features
 
-**Frontend:** React.js, Redux Toolkit, React Router, Axios, CSS3  
-**Backend:** Node.js, Express.js  
-**Database:** PostgreSQL  
-**Others:** Cloudinary (image hosting), RESTful APIs  
+* ✍️ Create, edit, and delete blog posts
+* 🖼️ Upload and display images (Cloudinary integration)
+* 📅 Auto-formatted date for posts
+* 🔄 Real-time updates with Redux Toolkit
+* 🎨 Responsive UI with modern design
+* ⚡ Optimized API handling with Axios
+* 🔑 **User authentication with JWT** (normal login using username, email & password)
+* 🌐 **OAuth integration** (Google login support)
 
 ---
 
-## 🚧 Future Improvements  
+## 🛠️ Tech Stack
 
-- 🔑 User authentication (JWT / OAuth)  
-- ❤️ Like & comment system  
-- 🔍 Search & filter blogs  
+**Frontend:** React.js, Redux Toolkit, React Router, Axios, CSS3
+**Backend:** Node.js, Express.js, JWT Authentication, OAuth (Google)
+**Database:** PostgreSQL
+**Others:** Cloudinary (image hosting), RESTful APIs
+
+---
+
+## 🚧 Future Improvements
+
+* ❤️ Like & comment system
+* 🔍 Search & filter blogs
+* 👤 User profiles with bio & avatar
+* 📌 Save & bookmark blogs
