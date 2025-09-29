@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { delete_post, get_post } from "../store/postSlice";
@@ -11,6 +11,7 @@ function Post() {
     const { blogList: posts } = useSelector(state => state.posts);
 
     const { user } = useSelector((state) => state.auth);
+    const [deleting, setDeleting] = useState(false);
 
     useEffect(() => {
         if (posts.length === 0) {
@@ -35,8 +36,17 @@ function Post() {
             toast.error("Please login to delete a post");
             navigate("/login", { state: { from: "/" } });
         } else {
-            await dispatch(delete_post(id));
-            navigate("/");
+            setDeleting(true);
+            setDeleting(true);
+            try {
+                await dispatch(delete_post(id)).unwrap();
+                navigate("/");
+            } catch (err) {
+                toast.error("Failed to delete post");
+                console.error(err);
+            } finally {
+                setDeleting(false);
+            }
         }
     }
 
@@ -77,7 +87,21 @@ function Post() {
                         <div className="d-flex justify-content-center gap-3">
                             <button className="btn btn-warning px-4 min-width-btn" onClick={handleEditPost}>Edit</button>
                             <form >
-                                <button onClick={deletePost} className="btn btn-danger px-4 min-width-btn">Delete</button>
+                                <button
+                                    onClick={deletePost}
+                                    className="btn btn-danger px-4 min-width-btn"
+                                    disabled={deleting}
+                                >
+                                    {deleting ? (
+                                        <>
+                                            <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                                            Deleting...
+                                        </>
+                                    ) : (
+                                        "Delete"
+                                    )}
+                                </button>
+
                             </form>
                         </div>
                     </div>
